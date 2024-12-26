@@ -1,38 +1,36 @@
-# AI Agentハッカソン
-プロジェクトの提出要件
-ハッカソンでのプロジェクト提出に関する要件は以下のとおりです。
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-提出物
-テストと審査用のプロジェクトのコードリポジトリの URL
-プロジェクトについて説明した Zenn の記事URL。文字数は 4000～6000 文字とし、下記 ⅰ～ⅲ を必ず記事中に含めてください。
-プロジェクトが対象とするユーザー像と課題、課題へのソリューションと特徴をまとめた説明文
-システム アーキテクチャ図の画像
-プロジェクトの 3 分以内のデモ動画
-※デモ動画は自作の上、YouTube に公開し Zenn 記事に埋め込んでください。
-提出フォーム
-https://forms.gle/d6zLCYkhLYoJ9V9i7
+## Getting Started
 
-提出期限
-2025年2月10日(月) 23:59まで
+First, run the development server:
 
-関連イベント
-ハッカソンを最大限に楽しみ、チームでの結束を高めたり、学びを深めたりするために、以下のイベントを開催いたします。
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-① チームビルディング＆ハンズオンイベント（オフライン開催）
-日時：2025年1月14日(火) 18:00～21:30
-場所： クラスメソッド株式会社 本社 日比谷オフィス
-対象：本ハッカソンへの参加登録が完了している個人またはチーム
-参加費：無料
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-チームビルディングを通して新たな仲間との出会いや連携の強化を図り、ハンズオンでは Google Cloud や AI 技術を一緒に学んでいきます。参加することで開発の効率を大幅に高められるチャンスです。
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-② オフィスアワー（オンライン開催）
-日時：2025年1月20日(月) 詳細は近日公開
-対象：本ハッカソンへの参加登録が完了している個人またはチーム
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-オンラインで開催されるオフィスアワーでは、開発を進めるうえでの疑問点や不安を直接質問することができます。技術的な課題や方向性の相談など、ぜひ積極的にご利用ください。
+## Learn More
 
-参加申し込み時にイベントについて「参加しない」と回答したものの、やはり参加したいという方は、事務局 zenn-support@classmethod.jp まで、参加希望のイベント名とともにお知らせください
+To learn more about Next.js, take a look at the following resources:
 
-皆さまのご健闘を心よりお祈りしております。
-どうぞよろしくお願いいたします！
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
