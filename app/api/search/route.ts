@@ -28,8 +28,9 @@ export async function POST(request: Request) {
 
         const data = await response.json();
         console.log("=== レスポンス ====")
-        console.log(data);
-        return new Response(JSON.stringify(data), { status: 200 });
+        const decodedText = JSON.parse(`"${data.text}"`);
+        console.log(decodedText);
+        return new Response(JSON.stringify({ text: decodedText }), { status: 200 });
     } catch (error) {
         console.error('Error:', error);
         return new Response(JSON.stringify({ error: 'Failed to process request' }), { status: 500 });

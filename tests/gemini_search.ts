@@ -9,7 +9,7 @@ async function testGeminiSearch() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ query: "Contact Center AIの料金体系について教えてください" })
+            body: JSON.stringify({ query: "Vertex AI Agent Builder scalable applications best practices" })
         });
         const result = await response.json();
         console.log('レスポンス:', result);
