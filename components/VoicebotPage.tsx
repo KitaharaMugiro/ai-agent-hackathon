@@ -1,9 +1,10 @@
 "use client"
 import Avatar from "@/components/Voicebot/Avatar";
 import useAudioPlayer from "@/components/Voicebot/useAudioPlayer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoIosCall } from "react-icons/io";
 import { MdCallEnd } from "react-icons/md";
+import { BsChatDots } from "react-icons/bs";
 import { Input } from "@/components/ui/input";
 
 interface Message {
@@ -15,6 +16,8 @@ export default function VoicebotPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [textMessage, setTextMessage] = useState('');
     const [showResultPopup, setShowResultPopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isChatMode, setIsChatMode] = useState(false);
     const resultUrl = "https://docs.google.com/spreadsheets/d/1IjXpZXKhbsxkuo4Fo3r80HYonebVoYsamSwtWxZVGOQ/edit?gid=0#gid=0"; // 結果表示用のURL
 
     const onResponse = (type: string, content: any) => {
@@ -30,17 +33,29 @@ export default function VoicebotPage() {
     };
 
     const onClose = () => {
-        setShowResultPopup(true);
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            setShowResultPopup(true);
+        }, 5000);
     };
 
-    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
+    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError, toggleMute } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
 
     const handleStopClick = () => {
         stop();
+        setIsChatMode(false);
     };
 
     const handleStartClick = async () => {
         start();
+        setIsChatMode(false);
+    };
+
+    const handleStartChat = async () => {
+        start();
+        toggleMute();
+        setIsChatMode(true);
     };
 
     const handlePhoneCall = () => {
@@ -70,6 +85,16 @@ export default function VoicebotPage() {
                     >
                         再読み込み
                     </button>
+                </div>
+            </div>
+        )}
+        {isLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl">
+                    <div className="flex flex-col items-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                        <p className="text-gray-700">AIエージェントが会話を分析中...</p>
+                    </div>
                 </div>
             </div>
         )}
@@ -110,7 +135,7 @@ export default function VoicebotPage() {
                                     <span className="text-white font-semibold">050-1111-2222に電話する</span>
                                 </button>
                                 <button
-                                    onClick={() => setShowResultPopup(true)}
+                                    onClick={() => onClose()}
                                     className="text-sm text-gray-500 mt-2 hover:text-gray-700"
                                 >
                                     電話を切ったらこちらをクリック
@@ -124,34 +149,44 @@ export default function VoicebotPage() {
                             </div>
 
                             {!isConnected ? (
-                                <button
-                                    onClick={handleStartClick}
-                                    className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200"
-                                >
-                                    <IoIosCall size={24} color="white" className="mr-2" />
-                                    <span className="text-white font-semibold">Webで話す</span>
-                                </button>
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={handleStartClick}
+                                        className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200"
+                                    >
+                                        <IoIosCall size={24} color="white" className="mr-2" />
+                                        <span className="text-white font-semibold">Webで話す</span>
+                                    </button>
+                                    <button
+                                        onClick={handleStartChat}
+                                        className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
+                                    >
+                                        <BsChatDots size={24} color="white" className="mr-2" />
+                                        <span className="text-white font-semibold">チャットで話す</span>
+                                    </button>
+                                </div>
                             ) : (
                                 <button
                                     onClick={handleStopClick}
                                     className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all duration-200"
                                 >
                                     <MdCallEnd size={24} color="white" className="mr-2" />
-                                    <span className="text-white font-semibold">通話を終了</span>
+                                    <span className="text-white font-semibold">{isChatMode ? "チャットを終了" : "通話を終了"}</span>
                                 </button>
                             )}
 
-                            <div className="mt-4">
-                                <Input
-                                    type="text"
-                                    disabled={!isConnected}
-                                    value={textMessage}
-                                    onChange={(e) => setTextMessage(e.target.value)}
-                                    onKeyPress={handleTextSubmit}
-                                    placeholder="テキストメッセージを入力..."
-                                    className="w-full md:w-2/3 mx-auto mt-6"
-                                />
-                            </div>
+                            {isConnected && isChatMode && (
+                                <div className="w-96">
+                                    <Input
+                                        type="text"
+                                        value={textMessage}
+                                        onChange={(e) => setTextMessage(e.target.value)}
+                                        onKeyPress={handleTextSubmit}
+                                        placeholder="メッセージを入力してEnterを押してください"
+                                        className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
