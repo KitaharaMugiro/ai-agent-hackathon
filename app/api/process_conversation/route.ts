@@ -2,6 +2,7 @@ import { generateAIContentWithJsonMode } from "@/lib/Gemini";
 import { createGithubIssue } from "@/lib/Github";
 import { sendSMS } from "@/lib/SMS";
 import { writeToSheet } from "@/lib/SpreadSheet";
+import { ResponseSchema, SchemaType } from "@google/generative-ai";
 
 
 
@@ -18,33 +19,24 @@ export async function POST(request: Request) {
 
         会話履歴:
         ${conversation_list.map((item: any) => `${item.role}: ${item.content}`).join('\n')}
-
-        以下のJSON形式で回答してください:
-        {
-          "categories": [
-            {
-              "type": string,      // カテゴリの種類（例: "クレーム", "新規機能要望", "FAQ"）
-              "details": string    // 具体的な内容の説明
-            }
-          ]
-        }
-
-        具体例:
-        {
-          "categories": [
-            {
-              "type": "クレーム",
-              "details": "商品の配送が遅延している件について苦情"
-            },
-            {
-              "type": "新規機能要望",
-              "details": "商品のトラッキング機能の追加要望"
-            }
-          ]
-        }
         `
+    const responseSchema: ResponseSchema = {
+      type: SchemaType.OBJECT,
+      properties: {
+        categories: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              type: { type: SchemaType.STRING, enum: ["クレーム", "新規機能要望", "FAQ", "その他"] },
+              details: { type: SchemaType.STRING }
+            }
+          }
+        }
+      }
+    };
 
-    const response_json = await generateAIContentWithJsonMode(prompt);
+    const response_json = await generateAIContentWithJsonMode(prompt, responseSchema);
     const a1 = title;
     const b1 = content;
     const c1 = url;

@@ -75,6 +75,6 @@ paths:
 ```
 
 ## 事後処理
-URL: https://ai-agent-hackathon.vercel.app/api/process_conversation
+URL: https://ai-agent-hackathon-61718451716.asia-northeast1.run.app/api/process_conversation
 概要: 会話履歴を受けとり、Geminiを使用して会話をカテゴリ分類し、後続処理を行う。
 

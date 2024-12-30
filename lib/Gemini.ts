@@ -1,7 +1,7 @@
 "use server"
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, ResponseSchema } from "@google/generative-ai";
 
-export async function generateAIContentWithJsonMode(prompt: string) {
+export async function generateAIContentWithJsonMode(prompt: string, responseSchema: ResponseSchema) {
     if (!process.env.GEMINI_API_KEY) {
         console.error('GEMINI_API_KEY is not set');
         return { error: 'GEMINI_API_KEY is not set' };
@@ -10,7 +10,8 @@ export async function generateAIContentWithJsonMode(prompt: string) {
     const model = genAI.getGenerativeModel({
         model: "models/gemini-2.0-flash-exp",
         generationConfig: {
-            responseMimeType: "application/json"
+            responseMimeType: "application/json",
+            responseSchema
         }
     });
 

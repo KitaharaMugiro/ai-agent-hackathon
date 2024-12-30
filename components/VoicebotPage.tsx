@@ -6,7 +6,6 @@ import { IoIosCall } from "react-icons/io";
 import { MdCallEnd } from "react-icons/md";
 import { Input } from "@/components/ui/input";
 
-
 interface Message {
     type: 'user' | 'ai';
     content: string;
@@ -15,7 +14,9 @@ interface Message {
 export default function VoicebotPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [textMessage, setTextMessage] = useState('');
-    const onClose = () => { };
+    const [showResultPopup, setShowResultPopup] = useState(false);
+    const resultUrl = "https://docs.google.com/spreadsheets/d/1IjXpZXKhbsxkuo4Fo3r80HYonebVoYsamSwtWxZVGOQ/edit?gid=0#gid=0"; // 結果表示用のURL
+
     const onResponse = (type: string, content: any) => {
         if (type === 'user' || type === 'ai') {
             const contentText = content.text;
@@ -27,6 +28,11 @@ export default function VoicebotPage() {
             interrupt()
         }
     };
+
+    const onClose = () => {
+        setShowResultPopup(true);
+    };
+
     const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
 
     const handleStopClick = () => {
@@ -37,31 +43,9 @@ export default function VoicebotPage() {
         start();
     };
 
-    const handleDownloadRecording = async () => {
-        const recording = await getRecording();
-        if (recording) {
-            const mixed = recording.mixed;
-            const mic = recording.mic;
-            const ai = recording.ai;
-
-            const mixedUrl = URL.createObjectURL(mixed);
-            const micUrl = URL.createObjectURL(mic);
-            const aiUrl = URL.createObjectURL(ai);
-
-            const a = document.createElement('a');
-            a.href = mixedUrl;
-            a.download = 'mixed.webm';
-            a.click();
-
-            a.href = micUrl;
-            a.download = 'mic.webm';
-            a.click();
-
-            a.href = aiUrl;
-            a.download = 'ai.webm';
-            a.click();
-        }
-    }
+    const handlePhoneCall = () => {
+        window.location.href = 'tel:05011112222';
+    };
 
     const handleTextSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && textMessage.trim() !== '') {
@@ -72,18 +56,6 @@ export default function VoicebotPage() {
             ]);
             setTextMessage('');
         }
-    };
-
-    const handleDownload = () => {
-        const csvContent = "data:text/csv;charset=utf-8,"
-            + messages.map(msg => `${msg.type},${msg.content}`).join("\n");
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "conversation.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     };
 
     return <div className="flex-1 bg-gradient-to-r from-green-100 to-blue-100 overflow-auto">
@@ -101,41 +73,90 @@ export default function VoicebotPage() {
                 </div>
             </div>
         )}
+        {showResultPopup && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 className="text-lg font-semibold mb-2">通話が終了しました</h3>
+                    <p className="mb-4">結果は以下のURLで確認できます：</p>
+                    <a
+                        href={resultUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 underline"
+                    >
+                        {resultUrl}
+                    </a>
+                    <button
+                        onClick={() => setShowResultPopup(false)}
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+                    >
+                        閉じる
+                    </button>
+                </div>
+            </div>
+        )}
         <div className="flex flex-col h-screen">
             <div className="flex justify-center mt-4">
                 <div className="h-[360px]">
-                    <Avatar isTalking={isPlaying} isThinking={false} />
-                    <div className="mt-12 flex justify-center">
-                        {!isConnected && (
-                            <button
-                                onClick={handleStartClick}
-                                className="relative mx-2 inline-flex items-center justify-center p-3 bg-green-500 rounded-full shadow-md"
-                            >
-                                <IoIosCall size={32} color="white" />
-                            </button>
-                        )}
-                        {isConnected && (
-                            <button
-                                onClick={handleStopClick}
-                                className="relative mx-2 inline-flex items-center justify-center p-3 bg-red-500 rounded-full shadow-md"
-                            >
-                                <MdCallEnd size={32} color="white" />
-                            </button>
-                        )}
+                    {/* <Avatar isTalking={isPlaying} isThinking={false} /> */}
+                    <div className="mt-12 flex flex-col items-center">
+                        <div className="flex flex-col items-center space-y-6">
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handlePhoneCall}
+                                    className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+                                >
+                                    <IoIosCall size={24} color="white" className="mr-2" />
+                                    <span className="text-white font-semibold">050-1111-2222に電話する</span>
+                                </button>
+                                <button
+                                    onClick={() => setShowResultPopup(true)}
+                                    className="text-sm text-gray-500 mt-2 hover:text-gray-700"
+                                >
+                                    電話を切ったらこちらをクリック
+                                </button>
+                            </div>
+
+                            <div className="flex items-center w-full">
+                                <div className="flex-1 h-px bg-gray-300"></div>
+                                <span className="px-4 text-gray-500 font-medium">または</span>
+                                <div className="flex-1 h-px bg-gray-300"></div>
+                            </div>
+
+                            {!isConnected ? (
+                                <button
+                                    onClick={handleStartClick}
+                                    className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200"
+                                >
+                                    <IoIosCall size={24} color="white" className="mr-2" />
+                                    <span className="text-white font-semibold">Webで話す</span>
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleStopClick}
+                                    className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all duration-200"
+                                >
+                                    <MdCallEnd size={24} color="white" className="mr-2" />
+                                    <span className="text-white font-semibold">通話を終了</span>
+                                </button>
+                            )}
+
+                            <div className="mt-4">
+                                <Input
+                                    type="text"
+                                    disabled={!isConnected}
+                                    value={textMessage}
+                                    onChange={(e) => setTextMessage(e.target.value)}
+                                    onKeyPress={handleTextSubmit}
+                                    placeholder="テキストメッセージを入力..."
+                                    className="w-full md:w-2/3 mx-auto mt-6"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="mt-4">
-                <Input
-                    type="text"
-                    disabled={!isConnected}
-                    value={textMessage}
-                    onChange={(e) => setTextMessage(e.target.value)}
-                    onKeyPress={handleTextSubmit}
-                    placeholder="テキストメッセージを入力..."
-                    className="w-full md:w-2/3 mx-auto mt-6"
-                />
-            </div>
+
             <div className="flex-grow overflow-y-auto px-4 mt-4">
                 {messages.slice(-5).map((message, index) => (
                     <div key={index} className={`mb-2 ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
@@ -144,21 +165,6 @@ export default function VoicebotPage() {
                         </span>
                     </div>
                 ))}
-            </div>
-            <div className="text-center mt-4 mb-2">
-                <button
-                    onClick={handleDownload}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    会話をダウンロード
-                </button>
-
-                <button
-                    onClick={handleDownloadRecording}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    録音をダウンロード
-                </button>
             </div>
         </div>
     </div>
