@@ -1,16 +1,25 @@
 import { google } from 'googleapis';
-import path from 'path';
-import { promises as fs } from 'fs';
 
 export async function writeToSheet(a1: string, b1: string, c1: string, d1: string, e1: string) {
-    const keyFilePath = path.join(process.cwd(), 'keys', 'langcore-427201-22e5f4337d0d.json');
-    const keyFileContent = await fs.readFile(keyFilePath, 'utf8');
-    const credentials = JSON.parse(keyFileContent);
+
+    const serviceAccount = {
+        type: "service_account",
+        project_id: process.env.GOOGLE_PROJECT_ID ?? '',
+        private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID ?? '',
+        private_key: (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\n/g, '\n'), // 改行を復元
+        client_email: process.env.GOOGLE_CLIENT_EMAIL ?? '',
+        client_id: process.env.GOOGLE_CLIENT_ID ?? '',
+        auth_uri: process.env.GOOGLE_AUTH_URI ?? '',
+        token_uri: process.env.GOOGLE_TOKEN_URI ?? '',
+        auth_provider_x509_cert_url: process.env.GOOGLE_AUTH_PROVIDER_CERT_URL,
+        client_x509_cert_url: process.env.GOOGLE_CLIENT_CERT_URL,
+    };
 
     const auth = new google.auth.GoogleAuth({
-        credentials,
+        credentials: serviceAccount,
         scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
+
     const sheets = google.sheets({ version: 'v4', auth });
 
     const spreadsheetId = '1IjXpZXKhbsxkuo4Fo3r80HYonebVoYsamSwtWxZVGOQ';
