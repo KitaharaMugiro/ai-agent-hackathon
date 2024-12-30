@@ -163,14 +163,6 @@ export default function VoicebotPage(props: Props) {
                     録音をダウンロード
                 </button>
             </div>
-            <p className="text-center text-sm mb-4 mt-2 text-gray-600">
-                ※ 周りの音がしない静かな環境で利用して下さい
-            </p>
-            <div className="text-center mt-auto mb-4">
-                <a href="/" className="text-blue-500 hover:text-blue-700">
-                    LangCore Voicebotについて
-                </a>
-            </div>
         </div>
     </div>
 }
