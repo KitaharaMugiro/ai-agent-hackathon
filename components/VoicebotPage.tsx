@@ -145,7 +145,7 @@ export default function VoicebotPage() {
                     </div>
                 ))}
             </div>
-            {/* <div className="text-center mt-4 mb-2">
+            <div className="text-center mt-4 mb-2">
                 <button
                     onClick={handleDownload}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -159,7 +159,7 @@ export default function VoicebotPage() {
                 >
                     録音をダウンロード
                 </button>
-            </div> */}
+            </div>
         </div>
     </div>
 }

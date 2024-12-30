@@ -44,16 +44,7 @@ export async function POST(request: Request) {
         }
         `
 
-    const response = await generateAIContentWithJsonMode(prompt);
-    let response_json;
-    try {
-      response_json = JSON.parse(response);
-      console.log(response_json);
-    } catch (parseError) {
-      console.error('Error parsing JSON response:', parseError);
-      return new Response(JSON.stringify({ error: 'Invalid JSON response' }), { status: 500 });
-    }
-
+    const response_json = await generateAIContentWithJsonMode(prompt);
     const a1 = title;
     const b1 = content;
     const c1 = url;
