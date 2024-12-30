@@ -24,15 +24,16 @@ export async function writeToSheet(a1: string, b1: string, c1: string, d1: strin
     const sheets = google.sheets({ version: 'v4', auth });
 
     const spreadsheetId = '1IjXpZXKhbsxkuo4Fo3r80HYonebVoYsamSwtWxZVGOQ';
-    const range = 'A1:E1'; // Adjust the range as needed
+    const range = 'A1:F1'; // Adjust the range as needed
 
+    const currentDate = new Date().toISOString().split('T')[0];
     const request = {
         spreadsheetId,
         range,
         valueInputOption: 'RAW',
         resource: {
             values: [
-                [a1, b1, c1, d1, e1],
+                [a1, b1, c1, d1, e1, currentDate],
             ],
         },
     };
