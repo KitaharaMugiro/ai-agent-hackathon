@@ -2,12 +2,7 @@
 # デプロイ
 
 ```
-docker build -t gcr.io/langcore-427201/nextjs-app .
-docker run -p 3000:3000 gcr.io/langcore-427201/nextjs-app
-
-
-gcloud builds submit --tag gcr.io/langcore-427201/nextjs-app
-gcloud run deploy nextjs-app --image gcr.io/langcore-427201/nextjs-app --platform managed --region us-central1 --allow-unauthenticated
+gcloud run deploy
 ```
 
 ## プロンプト
