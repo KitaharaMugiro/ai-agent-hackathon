@@ -122,8 +122,43 @@ export default function VoicebotPage() {
         )}
         <div className="flex flex-col h-screen">
             <div className="flex justify-center mt-4">
-                <div className="h-[360px]">
-                    {/* <Avatar isTalking={isPlaying} isThinking={false} /> */}
+                <div>
+
+                    <details className="bg-white/80 p-4 rounded-lg shadow-sm max-w-2xl mx-auto">
+                        <summary className="cursor-pointer text-gray-700 font-medium">
+                            本AIオペレーターについて
+                        </summary>
+                        <div className="mt-3 text-sm text-gray-600">
+                            <p className="mb-2">
+                                Google Cloudのサービスに関する質問、クレーム、新規機能要望を受け付けるAIオペレーターです。
+                            </p>
+                            <p className="mb-2 text-xs">対象サービス:</p>
+                            <div className="text-xs text-gray-500 grid grid-cols-2 gap-1">
+                                <div>• Vertex AI Studio</div>
+                                <div>• Vertex AI Agent Builder</div>
+                                <div>• Vertex AI Platform</div>
+                                <div>• Vertex AI Notebooks</div>
+                                <div>• Gemini API in Vertex AI</div>
+                                <div>• AutoML</div>
+                                <div>• Natural Language AI</div>
+                                <div>• Speech to Text</div>
+                                <div>• Text to Speech</div>
+                                <div>• Translation AI</div>
+                                <div>• Vision AI</div>
+                                <div>• Video AI</div>
+                                <div>• Document AI</div>
+                                <div>• DialogFlow</div>
+                                <div>• Contact Center AI</div>
+                                <div>• Cloud Functions</div>
+                                <div>• App Engine</div>
+                                <div>• Cloud Run</div>
+                                <div>• Google Kubernetes Engine</div>
+                                <div>• Google Compute Engine</div>
+                            </div>
+                        </div>
+                    </details>
+
+
                     <div className="mt-12 flex flex-col items-center">
                         <div className="flex flex-col items-center space-y-6">
                             <div className="flex flex-col items-center">
