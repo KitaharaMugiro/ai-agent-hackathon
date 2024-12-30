@@ -1,4 +1,4 @@
-import { generateAIContent } from "@/lib/Gemini";
+import { generateAIContentWithJsonMode } from "@/lib/Gemini";
 
 const prompt = `
 人気の寿司のネタ5つを以下のJSONスキーマーで返してください。
@@ -9,7 +9,7 @@ const prompt = `
 }`;
 
 const Page = async () => {
-    const aiContent = await generateAIContent(prompt);
+    const aiContent = await generateAIContentWithJsonMode(prompt);
     return (
         <div className="bg-gradient-to-r">
             <pre>{aiContent}</pre>

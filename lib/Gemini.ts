@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export async function generateAIContent(prompt: string) {
+export async function generateAIContentWithJsonMode(prompt: string) {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error('GEMINI_API_KEY is not set');
     }
