@@ -1,0 +1,7 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/langcore-427201/nextjs-app', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/langcore-427201/nextjs-app']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'nextjs-app', '--image', 'gcr.io/langcore-427201/nextjs-app', '--platform', 'managed', '--region', 'us-central1', '--allow-unauthenticated']

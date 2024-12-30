@@ -1,3 +1,4 @@
+"use server"
 import { google } from 'googleapis';
 
 export async function writeToSheet(a1: string, b1: string, c1: string, d1: string, e1: string) {

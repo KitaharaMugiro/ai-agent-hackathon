@@ -1,7 +1,17 @@
 # 受付対応エージェント
-## プロンプト
+# デプロイ
+
+```
+docker build -t gcr.io/langcore-427201/nextjs-app .
+docker run -p 3000:3000 gcr.io/langcore-427201/nextjs-app
+
+
+gcloud builds submit --tag gcr.io/langcore-427201/nextjs-app
+gcloud run deploy nextjs-app --image gcr.io/langcore-427201/nextjs-app --platform managed --region us-central1 --allow-unauthenticated
 ```
 
+## プロンプト
+```
 ```
 
 
@@ -70,7 +80,6 @@ paths:
 ```
 
 ## 事後処理
-URL: /api/process_conversation
-概要: ユーザーの質問を受け取り、Geminiを使用して関連する情報を検索して返す。
-
+URL: https://ai-agent-hackathon.vercel.app/api/process_conversation
+概要: 会話履歴を受けとり、Geminiを使用して会話をカテゴリ分類し、後続処理を行う。
 

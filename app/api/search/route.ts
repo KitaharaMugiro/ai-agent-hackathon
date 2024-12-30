@@ -7,7 +7,7 @@ export async function POST(request: Request) {
             return new Response(JSON.stringify({ error: 'Query is required' }), { status: 400 });
         }
 
-        const query_text = `なるべく情報をまとめて短く回答してください。クエリ: 「${query}」`
+        const query_text = `簡潔に必要な情報だけをまとめて返してください。クエリ: 「${query}」`
         const response = await fetch('https://gemini-search.onrender.com/api/gemini_search', {
             method: 'POST',
             headers: {

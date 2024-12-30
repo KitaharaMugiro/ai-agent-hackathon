@@ -6,16 +6,13 @@ import { IoIosCall } from "react-icons/io";
 import { MdCallEnd } from "react-icons/md";
 import { Input } from "@/components/ui/input";
 
-interface Props {
-    client_id: string;
-}
 
 interface Message {
     type: 'user' | 'ai';
     content: string;
 }
 
-export default function VoicebotPage(props: Props) {
+export default function VoicebotPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [textMessage, setTextMessage] = useState('');
     const onClose = () => { };
@@ -30,7 +27,7 @@ export default function VoicebotPage(props: Props) {
             interrupt()
         }
     };
-    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError } = useAudioPlayer(onClose, onResponse, props.client_id);
+    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
 
     const handleStopClick = () => {
         stop();
@@ -148,7 +145,7 @@ export default function VoicebotPage(props: Props) {
                     </div>
                 ))}
             </div>
-            <div className="text-center mt-4 mb-2">
+            {/* <div className="text-center mt-4 mb-2">
                 <button
                     onClick={handleDownload}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -162,7 +159,7 @@ export default function VoicebotPage(props: Props) {
                 >
                     録音をダウンロード
                 </button>
-            </div>
+            </div> */}
         </div>
     </div>
 }

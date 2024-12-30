@@ -1,3 +1,4 @@
+"use server"
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function generateAIContentWithJsonMode(prompt: string) {
