@@ -12,7 +12,7 @@ gcloud run deploy
 
 ## Tool
 ### Gemini検索
-URL: https://ai-agent-hackathon.vercel.app/api/search
+URL: https://ai-agent-hackathon-61718451716.asia-northeast1.run.app/api/search
 概要: ユーザーの質問を受け取り、Geminiを使用して関連する情報を検索して返す。
 
 ```
@@ -22,7 +22,7 @@ info:
   description: API for performing searches using the Gemini Search engine. Accepts a query string and provides summarized search results.
   version: 1.0.0
 servers:
-  - url: https://ai-agent-hackathon.vercel.app/api
+  - url: https://ai-agent-hackathon-61718451716.asia-northeast1.run.app/api
     description: Main API server
 paths:
   /search:

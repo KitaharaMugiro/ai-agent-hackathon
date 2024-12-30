@@ -17,7 +17,8 @@ export async function POST(request: Request) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch from gemini_search API');
+            console.error('Failed to fetch from gemini_search API');
+            return new Response(JSON.stringify({ error: 'Failed to fetch from gemini_search API' }), { status: 200 });
         }
 
         const data = await response.json();
