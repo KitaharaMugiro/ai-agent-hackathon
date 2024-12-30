@@ -1,5 +1,3 @@
-import { POST } from '@/app/api/process_conversation/route';
-// 動作確認用の簡易テスト
 async function testProcessConversation() {
     try {
         // 正常系のテスト
@@ -15,7 +13,13 @@ async function testProcessConversation() {
             })
         });
 
-        const response = await POST(validRequest);
+        const response = await fetch('http://localhost:3000/api/process_conversation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(validRequest)
+        });
         const result = await response.json();
         console.log('レスポンス:', result);
     } catch (error) {

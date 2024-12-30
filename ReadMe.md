@@ -151,3 +151,9 @@ paths:
 URL: https://ai-agent-hackathon-61718451716.asia-northeast1.run.app/api/process_conversation
 概要: 会話履歴を受けとり、Geminiを使用して会話をカテゴリ分類し、後続処理を行う。
 
+
+# デプロイ環境
+* Cloud Run
+https://console.cloud.google.com/run/detail/asia-northeast1/ai-agent-hackathon/logs?hl=ja&inv=1&invt=Ablf9A&project=langcore-427201
+
+* Render
