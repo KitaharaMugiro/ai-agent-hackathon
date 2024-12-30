@@ -29,7 +29,7 @@ export async function POST(request: Request) {
             type: SchemaType.OBJECT,
             properties: {
               type: { type: SchemaType.STRING, enum: ["クレーム", "新規機能要望", "FAQ", "その他"] },
-              details: { type: SchemaType.STRING }
+              details: { type: SchemaType.STRING, description: "カテゴリに応じた詳細な内容" }
             }
           }
         }

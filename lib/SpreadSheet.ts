@@ -26,7 +26,7 @@ export async function writeToSheet(a1: string, b1: string, c1: string, d1: strin
     const spreadsheetId = '1IjXpZXKhbsxkuo4Fo3r80HYonebVoYsamSwtWxZVGOQ';
     const range = 'A1:F1'; // Adjust the range as needed
 
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
     const request = {
         spreadsheetId,
         range,
