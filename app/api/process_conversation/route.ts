@@ -39,8 +39,8 @@ export async function POST(request: Request) {
     const response_json = await generateAIContentWithJsonMode(prompt, responseSchema);
     const a1 = title;
     const b1 = content;
-    const c1 = url;
-    const d1 = id;
+    const c1 = response_json.categories[0].type;
+    const d1 = response_json.categories[0].details;
     const e1 = JSON.stringify(response_json);
 
     //スプレッドシートに書き込む
