@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
         const data = await response.json();
         console.log("=== レスポンス ====")
-        const decodedText = JSON.parse(`"${data.text}"`);
+        const decodedText = data.text;
         console.log(decodedText);
         return new Response(JSON.stringify({ text: decodedText }), { status: 200 });
     } catch (error) {
