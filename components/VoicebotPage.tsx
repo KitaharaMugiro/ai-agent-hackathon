@@ -163,14 +163,13 @@ export default function VoicebotPage() {
                         <div className="flex flex-col items-center space-y-6">
                             <div className="flex flex-col items-center">
                                 <button
-                                    onClick={handlePhoneCall}
+                                    onClick={() => alert('準備中です')}
                                     className="relative inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
                                 >
                                     <IoIosCall size={24} color="white" className="mr-2" />
-                                    <span className="text-white font-semibold">050-1111-2222に電話する</span>
+                                    <span className="text-white font-semibold">050-xxxx-xxxxに電話する</span>
                                 </button>
                                 <button
-                                    onClick={() => onClose()}
                                     className="text-sm text-gray-500 mt-2 hover:text-gray-700"
                                 >
                                     電話を切ったらこちらをクリック

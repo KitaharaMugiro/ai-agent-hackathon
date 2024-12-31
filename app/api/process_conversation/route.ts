@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         case "クレーム":
           console.log("クレーム検知: 優先対応が必要です");
           const message = `クレーム検知: 優先対応が必要です\n${category.details}`;
-          await sendSMS("+818019852272", message);
+          await sendSMS(process.env.ADMIN_PHONE_NUMBER || "", message);
           break;
 
         case "新規機能要望":

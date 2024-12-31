@@ -1,7 +1,12 @@
 "use server"
 import twilio from 'twilio';
-
+const isEnabled = false;
 export async function sendSMS(to: string, message: string) {
+    if (!isEnabled) {
+        // MEMO:コストがかかるため、必要でない時は無効にしている
+        console.log("SMS送信は無効です");
+        return;
+    }
     try {
         const accountSid = process.env.TWILIO_ACCOUNT_SID;
         const authToken = process.env.TWILIO_AUTH_TOKEN;
