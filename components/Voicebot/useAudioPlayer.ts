@@ -266,10 +266,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
 
         micSource.connect(destination);
         const processor = newAudioContext.createScriptProcessor(BUFFER_SIZE, 1, 1);
-        const wsProtocol = process.env.NEXT_PUBLIC_VOICEBOT_URL;
-        if (!wsProtocol) {
-            throw new Error('NEXT_PUBLIC_VOICEBOT_URL is not defined');
-        }
+        const wsProtocol = "wss://voicebot-api.langcore.org";
         const newWebsocket = new WebSocket(`${wsProtocol}/ws/user/${clientId}`);
         websocketRef.current = newWebsocket;
 
