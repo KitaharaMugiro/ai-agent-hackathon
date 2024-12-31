@@ -33,7 +33,7 @@ export async function writeToSheet(a1: string, b1: string, c1: string, d1: strin
         valueInputOption: 'RAW',
         resource: {
             values: [
-                [a1, b1, c1, d1, e1, currentDate],
+                [currentDate, a1, b1, c1, d1, e1],
             ],
         },
     };

@@ -29,7 +29,8 @@ export async function POST(request: Request) {
             type: SchemaType.OBJECT,
             properties: {
               type: { type: SchemaType.STRING, enum: ["クレーム", "新規機能要望", "FAQ", "その他"] },
-              details: { type: SchemaType.STRING, description: "カテゴリに応じた詳細な内容" }
+              details: { type: SchemaType.STRING, description: "カテゴリに応じた詳細な内容" },
+              action: { type: SchemaType.BOOLEAN, description: "有人による対応が必要か。解決済みであればfalse, 未解決であればtrue" }
             }
           }
         }
@@ -37,17 +38,19 @@ export async function POST(request: Request) {
     };
 
     const response_json = await generateAIContentWithJsonMode(prompt, responseSchema);
-    const a1 = title;
-    const b1 = content;
-    const c1 = response_json.categories[0].type;
-    const d1 = response_json.categories[0].details;
-    const e1 = JSON.stringify(response_json);
 
-    //スプレッドシートに書き込む
-    await writeToSheet(a1, b1, c1, d1, e1);
 
     // カテゴリに基づいて処理を分岐
     for (const category of response_json.categories) {
+      const a1 = title;
+      const b1 = content;
+      const c1 = category.type;
+      const d1 = category.details;
+      const e1 = category.action;
+
+      //スプレッドシートに書き込む
+      await writeToSheet(a1, b1, c1, d1, e1);
+
       switch (category.type) {
         case "クレーム":
           console.log("クレーム検知: 優先対応が必要です");
