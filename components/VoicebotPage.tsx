@@ -100,14 +100,14 @@ export default function VoicebotPage() {
         )}
         {showResultPopup && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl">
+                <div className="bg-white p-6 rounded-lg shadow-xl max-w-[90%] w-[400px]">
                     <h3 className="text-lg font-semibold mb-2">通話が終了しました</h3>
                     <p className="mb-4">結果は以下のURLで確認できます：</p>
                     <a
                         href={resultUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 underline"
+                        className="text-blue-500 hover:text-blue-700 underline break-all"
                     >
                         {resultUrl}
                     </a>
@@ -170,6 +170,7 @@ export default function VoicebotPage() {
                                     <span className="text-white font-semibold">050-xxxx-xxxxに電話する</span>
                                 </button>
                                 <button
+                                    onClick={() => setShowResultPopup(true)}
                                     className="text-sm text-gray-500 mt-2 hover:text-gray-700"
                                 >
                                     電話を切ったらこちらをクリック
