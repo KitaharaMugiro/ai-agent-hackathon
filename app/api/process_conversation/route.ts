@@ -29,7 +29,8 @@ export async function POST(request: Request) {
             type: SchemaType.OBJECT,
             properties: {
               type: { type: SchemaType.STRING, enum: ["クレーム", "新規機能要望", "FAQ", "その他"] },
-              details: { type: SchemaType.STRING, description: "カテゴリに応じた詳細な内容" },
+              title: { type: SchemaType.STRING, description: "カテゴリに応じたタイトル。クレームであれば障害名、機能要望であれば機能名、FAQであればどのような質問内容" },
+              details: { type: SchemaType.STRING, description: "カテゴリに応じた詳細な内容。クレームであれば具体的な問題の内容、機能要望であればどのような機能を作りたいか、FAQであればどのような回答をしたか" },
               action: { type: SchemaType.BOOLEAN, description: "有人による対応が必要か。解決済みであればfalse, 未解決であればtrue" }
             }
           }
@@ -43,8 +44,8 @@ export async function POST(request: Request) {
     // カテゴリに基づいて処理を分岐
     for (const category of response_json.categories) {
       const a1 = title;
-      const b1 = content;
-      const c1 = category.type;
+      const b1 = category.type;
+      const c1 = category.title;
       const d1 = category.details;
       const e1 = category.action;
 
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
 
         case "新規機能要望":
           console.log("機能要望検知: 製品開発チームへ転送");
-          await createGithubIssue(title, content, ["feature-request"]);
+          await createGithubIssue(category.title, category.details, ["feature-request"]);
           break;
 
         case "FAQ":
