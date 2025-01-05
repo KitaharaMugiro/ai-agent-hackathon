@@ -13,7 +13,7 @@ export async function POST(request: Request) {
         簡潔に必要な情報だけをまとめて返してください。
         
         クエリ: 「${query}」`
-        const response = await fetch('https://gemini-search.onrender.com/api/gemini_search', {
+        const response = await fetch('https://gemini-search-61718451716.asia-northeast1.run.app/api/gemini_search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
