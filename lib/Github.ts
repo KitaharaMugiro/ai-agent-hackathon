@@ -11,12 +11,14 @@ export async function createGithubIssue(title: string, body: string, labels: str
             throw new Error('GitHub configuration is missing');
         }
 
+        const normalizedLabels = Array.isArray(labels) ? labels : [];
+
         const response = await octokit.issues.create({
             owner: process.env.GITHUB_OWNER,
             repo: process.env.GITHUB_REPO,
             title: title,
             body: body,
-            labels: labels
+            labels: normalizedLabels
         });
 
         return {
