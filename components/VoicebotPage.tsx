@@ -40,7 +40,7 @@ export default function VoicebotPage() {
         }, 5000);
     };
 
-    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError, toggleMute } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
+    const { isPlaying, stop, start, interrupt, isConnected, sendTextMessage, getRecording, micPermissionError, toggleMute, togglePlaybackMute } = useAudioPlayer(onClose, onResponse, "d007274c-07b3-4f25-9b32-2ef437ff106c");
 
     const handleStopClick = () => {
         stop();
@@ -55,6 +55,7 @@ export default function VoicebotPage() {
     const handleStartChat = async () => {
         start();
         toggleMute();
+        togglePlaybackMute(); // チャットモードの時は音声をミュート
         setIsChatMode(true);
     };
 

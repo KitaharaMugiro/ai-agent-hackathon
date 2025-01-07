@@ -91,7 +91,6 @@ class StreamProcessor extends AudioWorkletProcessor {
 
 registerProcessor('stream_processor', StreamProcessor);
 `;
-
 const StreamProcessorSrc = URL.createObjectURL(new Blob([StreamProcessorWorklet], { type: 'application/javascript' }));
 
 class WavStreamPlayer {
@@ -103,6 +102,8 @@ class WavStreamPlayer {
     private trackSampleOffsets: Record<string, { trackId: string, offset: number, currentTime: number }>;
     private interruptedTrackIds: Record<string, boolean>;
     private destinations: AudioNode[];
+    private gainNode: GainNode | null;
+    private isPlaybackMuted: boolean;
 
     constructor({ sampleRate = 44100, audioContext }: { sampleRate?: number, audioContext: AudioContext }) {
         this.scriptSrc = StreamProcessorSrc;
@@ -113,6 +114,8 @@ class WavStreamPlayer {
         this.trackSampleOffsets = {};
         this.interruptedTrackIds = {};
         this.destinations = [];
+        this.gainNode = null;
+        this.isPlaybackMuted = false;
     }
 
     async connect() {
@@ -137,12 +140,22 @@ class WavStreamPlayer {
 
     private _start() {
         if (!this.context) return false;
+
         const streamNode = new AudioWorkletNode(this.context, 'stream_processor');
-        streamNode.connect(this.context.destination);
+
+        const gainNode = this.context.createGain();
+        this.gainNode = gainNode;
+
+        gainNode.gain.value = this.isPlaybackMuted ? 0 : 1;
+
+        streamNode.connect(gainNode);
+        gainNode.connect(this.context.destination);
+
         streamNode.port.onmessage = (e) => {
             const { event } = e.data;
             if (event === 'stop') {
                 streamNode.disconnect();
+                gainNode.disconnect();
                 this.stream = null;
             } else if (event === 'offset') {
                 const { requestId, trackId, offset } = e.data;
@@ -151,11 +164,11 @@ class WavStreamPlayer {
                 console.log("trackSampleOffsets", this.trackSampleOffsets);
             }
         };
+
         this.analyser?.disconnect();
         streamNode.connect(this.analyser!);
 
-        // 全ての出力先に接続
-        this.destinations.forEach(dest => streamNode.connect(dest));
+        this.destinations.forEach(dest => gainNode.connect(dest));
 
         this.stream = streamNode;
         return true;
@@ -178,7 +191,6 @@ class WavStreamPlayer {
         } else if (this.interruptedTrackIds[trackId]) {
             return;
         }
-        // console.log("stream", this.stream);
         if (!this.stream && this.destinations.length > 0) {
             this.startPlayback(this.destinations);
         } else if (!this.stream) {
@@ -224,6 +236,13 @@ class WavStreamPlayer {
     isPlaying() {
         return this.stream !== null && this.stream.port !== null;
     }
+
+    public setPlaybackMuted(muted: boolean) {
+        this.isPlaybackMuted = muted;
+        if (this.gainNode) {
+            this.gainNode.gain.value = muted ? 0 : 1;
+        }
+    }
 }
 
 const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content: string) => void, clientId: string = "callcenter") => {
@@ -234,13 +253,16 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
     const wavStreamPlayerRef = useRef<WavStreamPlayer | null>(null);
     const BUFFER_SIZE = 4096;
     const speakingStopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const isMutedRef = useRef<boolean>(false);
+    const isMutedRef = useRef<boolean>(false); // マイクのミュート用
     const recorderRef = useRef<MediaRecorder | null>(null);
     const micRecorderRef = useRef<MediaRecorder | null>(null); // マイク音声用
-    const aiRecorderRef = useRef<MediaRecorder | null>(null); // AI音声用
+    const aiRecorderRef = useRef<MediaRecorder | null>(null);  // AI音声用
     const chunksRef = useRef<Blob[]>([]);
     const micChunksRef = useRef<Blob[]>([]); // マイク音声用
-    const aiChunksRef = useRef<Blob[]>([]); // AI音声用
+    const aiChunksRef = useRef<Blob[]>([]);  // AI音声用
+
+    // ▼ 追加: 再生ミュート用
+    const isPlaybackMutedRef = useRef<boolean>(false);
 
     const start = async () => {
         let micStream;
@@ -257,7 +279,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
             setHasMicPermission(false);
             setMicPermissionError(true);
             console.error("Error getting microphone permission", error);
-            return
+            return;
         }
         const newAudioContext = new AudioContext({ sampleRate: 44100 });
         const micSource = newAudioContext.createMediaStreamSource(micStream);
@@ -274,7 +296,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         processor.connect(newAudioContext.destination);
 
         processor.onaudioprocess = function (e: AudioProcessingEvent) {
-            if (isMutedRef.current) return;
+            if (isMutedRef.current) return; // マイクがミュートなら送信しない
             const inputData = e.inputBuffer.getChannelData(0);
             const outputData = new Int16Array(inputData.length);
             for (let i = 0; i < inputData.length; i++) {
@@ -321,10 +343,11 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
             }
         };
 
+        // ▼ WavStreamPlayer を準備
         wavStreamPlayerRef.current = new WavStreamPlayer({ sampleRate: 44100, audioContext: newAudioContext });
         await wavStreamPlayerRef.current.connect();
 
-        // マイク音声の録音設定
+        // マイク音声の録音
         micRecorderRef.current = new MediaRecorder(micStream);
         micChunksRef.current = [];
         micRecorderRef.current.ondataavailable = (event) => {
@@ -332,7 +355,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         };
         micRecorderRef.current.start();
 
-        // AI音声の録音設定
+        // AI音声の録音
         aiRecorderRef.current = new MediaRecorder(aiDestination.stream);
         aiChunksRef.current = [];
         aiRecorderRef.current.ondataavailable = (event) => {
@@ -340,7 +363,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         };
         aiRecorderRef.current.start();
 
-        // ミックスされた音声の録音設定
+        // ミックスされた音声の録音
         const mixedStream = destination.stream;
         recorderRef.current = new MediaRecorder(mixedStream);
         chunksRef.current = [];
@@ -352,7 +375,9 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         // 複数の出力先を指定して再生を開始
         wavStreamPlayerRef.current.startPlayback([destination, aiDestination]);
 
-    }
+        // ▼ もしここで初期状態からミュートにしたい場合は呼ぶ
+        // wavStreamPlayerRef.current.setPlaybackMuted(isPlaybackMutedRef.current);
+    };
 
     const _addAudioChunk = (chunk: Blob, trackId: string) => {
         const reader = new FileReader();
@@ -418,22 +443,31 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
                 resolve();
             }
         });
-    }
+    };
 
     const interrupt = () => {
         _stopAudio();
-    }
+    };
 
     const sendTextMessage = (text: string) => {
         if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
             websocketRef.current.send(JSON.stringify({ event: "text", payload: { text } }));
         }
-    }
+    };
 
+    // 既存: マイクのミュート切り替え
     const toggleMute = () => {
         isMutedRef.current = !isMutedRef.current;
-    }
+    };
 
+    // ▼ 追加: 再生のミュート切り替え用関数
+    const togglePlaybackMute = () => {
+        isPlaybackMutedRef.current = !isPlaybackMutedRef.current;
+        // WavStreamPlayer にミュート状態を反映
+        if (wavStreamPlayerRef.current) {
+            wavStreamPlayerRef.current.setPlaybackMuted(isPlaybackMutedRef.current);
+        }
+    };
 
     const getRecording = async () => {
         if (chunksRef.current.length === 0) {
@@ -448,7 +482,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
             mic: micBlob,
             ai: aiBlob
         };
-    }
+    };
 
     const isPlaying = wavStreamPlayerRef.current?.isPlaying() || false;
     const [isConnected, setIsConnected] = useState(false);
@@ -465,7 +499,20 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         return () => clearInterval(interval);
     }, []);
 
-    return { isPlaying, isConnected, stop, start, interrupt, sendTextMessage, toggleMute, isMuted: isMutedRef.current, getRecording, hasMicPermission, micPermissionError };
+    return {
+        isPlaying,
+        isConnected,
+        stop,
+        start,
+        interrupt,
+        sendTextMessage,
+        toggleMute,              // マイクのミュート
+        togglePlaybackMute,      // ▼ 追加: 音声再生のミュート
+        isMuted: isMutedRef.current,
+        getRecording,
+        hasMicPermission,
+        micPermissionError
+    };
 };
 
 export default useAudioPlayer;
