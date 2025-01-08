@@ -242,6 +242,8 @@ class WavStreamPlayer {
         if (this.gainNode) {
             this.gainNode.gain.value = muted ? 0 : 1;
         }
+        console.log("setPlaybackMuted", muted);
+        console.log("this.gainNode", this.gainNode);
     }
 }
 
@@ -464,6 +466,8 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
     const togglePlaybackMute = () => {
         isPlaybackMutedRef.current = !isPlaybackMutedRef.current;
         // WavStreamPlayer にミュート状態を反映
+        console.log("togglePlaybackMute", isPlaybackMutedRef.current);
+        console.log("wavStreamPlayerRef.current", wavStreamPlayerRef.current);
         if (wavStreamPlayerRef.current) {
             wavStreamPlayerRef.current.setPlaybackMuted(isPlaybackMutedRef.current);
         }
@@ -509,6 +513,7 @@ const useAudioPlayer = (onClose: () => void, onResponse: (type: string, content:
         toggleMute,              // マイクのミュート
         togglePlaybackMute,      // ▼ 追加: 音声再生のミュート
         isMuted: isMutedRef.current,
+        isPlaybackMuted: isPlaybackMutedRef.current,
         getRecording,
         hasMicPermission,
         micPermissionError
